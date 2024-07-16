@@ -12,7 +12,7 @@ Original file is located at
 
 import os
 os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON'] = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-
+import pytz
 import json
 import gspread
 import requests
@@ -65,9 +65,11 @@ def fetch_and_update_sheet(symbols, sheet_name, creds):
     sheet_data = []
 
     if sheet.row_count < 1:
-      headers = ["Time", "Symbol", "Delivery to Traded Quantity", "Quantity Traded", "Delivery Quantity"]
-      sheet.append_row(headers)  # Append the headers to the sheet
+        headers = ["Time", "Symbol", "Delivery to Traded Quantity", "Quantity Traded", "Delivery Quantity"]
+        sheet.append_row(headers)  # Append the headers to the sheet
 
+    # Set the timezone to IST
+    ist = pytz.timezone('Asia/Kolkata')
 
     for symbol in symbols:
         url = f"https://www.nseindia.com/api/quote-equity?symbol={symbol}&section=trade_info"
@@ -78,25 +80,25 @@ def fetch_and_update_sheet(symbols, sheet_name, creds):
             'Accept': '*/*',
             'Accept-Encoding': 'gzip, deflate',
             'Accept-Language': 'en-AS,en-US;q=0.9,en;q=0.8,ta;q=0.7',
-            'Cookie':cookie
+            'Cookie': cookie
         }
 
         response = requests.get(url, headers=headers)
-        data = response.json()
-
         if response.status_code == 200:
-          data = response.json()
+            data = response.json()
+            print(response.text)  # Add this to debug the raw output of the API response
         else:
-          print("Failed to fetch data:", response.status_code)
+            print("Failed to fetch data:", response.status_code)
+            continue
 
         if data.get('securityWiseDP'):
             security_wise_dp = data['securityWiseDP']
-            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            current_time_ist = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
             quantityTraded = security_wise_dp.get('quantityTraded', 0)
             deliveryQuantity = security_wise_dp.get('deliveryQuantity', 0)
             deliveryToTradedQuantity = security_wise_dp.get('deliveryToTradedQuantity', 0)
 
-            row = [current_time, symbol, deliveryToTradedQuantity, quantityTraded, deliveryQuantity]
+            row = [current_time_ist, symbol, deliveryToTradedQuantity, quantityTraded, deliveryQuantity]
             sheet.append_row(row)  # Append the data row to the sheet
             sheet_data.append(row)
     return sheet_data

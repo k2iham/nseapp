@@ -2,7 +2,14 @@ name: Scheduled Python Script
 
 on:
   schedule:
-    - cron: '0 2 * * *' # Runs at 2 AM UTC daily
+    - cron: '45 3 * * *'   # Runs at 3:45 AM UTC (9:15 AM IST)
+    - cron: '45 4 * * *'   # Runs at 4:45 AM UTC (10:15 AM IST)
+    - cron: '45 5 * * *'   # Runs at 5:45 AM UTC (11:15 AM IST)
+    - cron: '45 6 * * *'   # Runs at 6:45 AM UTC (12:15 PM IST)
+    - cron: '45 7 * * *'   # Runs at 7:45 AM UTC (1:15 PM IST)
+    - cron: '45 8 * * *'   # Runs at 8:45 AM UTC (2:15 PM IST)
+    - cron: '45 9 * * *'   # Runs at 9:45 AM UTC (3:15 PM IST)
+    - cron: '05 10 * * *'  # Runs at 10:05 AM UTC (3:35 PM IST)
 
 jobs:
   run-script:

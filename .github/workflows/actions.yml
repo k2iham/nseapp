@@ -1,4 +1,4 @@
-name: Scheduled Python Script
+name: Scheduled py Script
 on:
   schedule:
     - cron: '45 3 * * *'   # Runs at 3:45 AM UTC (9:15 AM IST)

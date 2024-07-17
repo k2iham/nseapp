@@ -1,27 +1,16 @@
 # -*- coding: utf-8 -*-
 
-
-# !pip install gspread
-# import gspread
-
 import os
-credentials_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
-if not credentials_json:
-    raise ValueError("GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set")
-
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_json
-
 import pytz
 import json
 import gspread
 import requests
 import google.auth
-from oauth2client.service_account import ServiceAccountCredentials
+from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 
 def get_fresh_cookies():
-    # This URL will be the one that sets the cookies initially after login or first access.
     url = 'https://www.nseindia.com'
     headers = {
         'User-Agent': 'Mozilla/5.0'
@@ -47,19 +36,15 @@ def make_authenticated_request(url, cookies):
         print("Failed to fetch data with status code:", response.status_code)
         return None  # Handle errors appropriately
 
-
 cookie = get_fresh_cookies()
 
-def authenticate_gspread(creds):
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds, _ = google.auth.default(scopes=scope)
-    client = gspread.authorize(creds)
+def authenticate_gspread():
+    credentials, project = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
+    client = gspread.authorize(credentials)
     return client
 
-
-
 def fetch_and_update_sheet(symbols, sheet_name):
-    client = authenticate_gspread(creds)
+    client = authenticate_gspread()
     sheet = client.open(sheet_name).sheet1
     sheet_data = []
 

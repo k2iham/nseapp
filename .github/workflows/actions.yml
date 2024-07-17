@@ -9,7 +9,7 @@ on:
     - cron: '45 8 * * *'   # Runs at 8:45 AM UTC (2:15 PM IST)
     - cron: '45 9 * * *'   # Runs at 9:45 AM UTC (3:15 PM IST)
     - cron: '05 10 * * *'  # Runs at 10:05 AM UTC (3:35 PM IST)
-    - cron: '01 12 * * *'  # Runs at 10:43 AM UTC (4:13 PM IST)
+    - cron: '20 12 * * *'  # Runs at 10:43 AM UTC (4:13 PM IST)
 
 jobs:
   run-script:

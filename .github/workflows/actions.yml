@@ -9,7 +9,7 @@ on:
     - cron: '45 8 * * *'   # Runs at 8:45 AM UTC (2:15 PM IST)
     - cron: '45 9 * * *'   # Runs at 9:45 AM UTC (3:15 PM IST)
     - cron: '05 10 * * *'  # Runs at 10:05 AM UTC (3:35 PM IST)
-    - cron: '20 12 * * *'  # Runs at 10:43 AM UTC (4:13 PM IST)
+    - cron: '25 09 * * *'  # Runs at 10:43 AM UTC (4:13 PM IST)
 
 jobs:
   run-script:
@@ -30,7 +30,19 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-
+      - name: Debug Secrets
+        run: |
+          if [ -n "${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}" ]; then
+            echo "GCP_WORKLOAD_IDENTITY_PROVIDER is set"
+          else
+            echo "GCP_WORKLOAD_IDENTITY_PROVIDER is not set"
+          fi
+          if [ -n "${{ secrets.GCP_SERVICE_ACCOUNT }}" ]; then
+            echo "GCP_SERVICE_ACCOUNT is set"
+          else
+            echo "GCP_SERVICE_ACCOUNT is not set"
+          fi
+          
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'

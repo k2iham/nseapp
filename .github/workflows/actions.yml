@@ -1,5 +1,4 @@
 name: Scheduled Python Script
-
 on:
   schedule:
     - cron: '45 3 * * *'   # Runs at 3:45 AM UTC (9:15 AM IST)
@@ -10,19 +9,21 @@ on:
     - cron: '45 8 * * *'   # Runs at 8:45 AM UTC (2:15 PM IST)
     - cron: '45 9 * * *'   # Runs at 9:45 AM UTC (3:15 PM IST)
     - cron: '05 10 * * *'  # Runs at 10:05 AM UTC (3:35 PM IST)
-    - cron: '43 10 * * *'  # Runs at 10:05 AM UTC (3:35 PM IST)
-    
+    - cron: '50 11 * * *'  # Runs at 10:43 AM UTC (4:13 PM IST)
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@main
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@main
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -30,14 +31,19 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Set up Google Cloud credentials
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
-        run: |
-          echo "${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}" > $HOME/gcloud-service-key.json
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: '${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
 
       - name: Run script
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
         run: |
           python app.py

@@ -5,9 +5,9 @@
 # import gspread
 
 import os
-credentials_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+credentials_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 if not credentials_json:
-    raise ValueError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set")
+    raise ValueError("GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set")
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_json
 

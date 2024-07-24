@@ -45,7 +45,16 @@ def authenticate_gspread():
 
 def fetch_and_update_sheet(symbols, sheet_name):
     client = authenticate_gspread()
-    sheet = client.open(sheet_name).sheet1
+    
+    # Get the day of the week along with the date and set it as the sheet name
+    today = datetime.now().strftime('%a-%d/%m/%y')
+    
+    try:
+        sheet = client.open(sheet_name).worksheet(today)
+    except gspread.exceptions.WorksheetNotFound:
+        # Create a new sheet if it doesn't exist
+        sheet = client.open(sheet_name).add_worksheet(title=today, rows="1000", cols="20")
+    
     sheet_data = []
 
     if sheet.row_count < 1:
@@ -88,7 +97,7 @@ def fetch_and_update_sheet(symbols, sheet_name):
     return sheet_data
 
 # Usage example
-symbols = ['HDFCBANK', 'RELIANCE', 'TCS']
+symbols = ['HDFCBANK', 'RELIANCE', 'TCS', 'ONGC', 'NTPC', 'NMDC', 'GAIL', 'TATASTEEL', 'FEDERALBNK', 'IDFCFIRSTB', 'CANFINHOME', 'OBEROIRLTY']
 sheet_name = 'sheets'  # Ensure this matches exactly with your Google Sheets name
 
 # Fetch data and update sheet
